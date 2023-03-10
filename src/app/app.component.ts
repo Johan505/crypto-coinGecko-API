@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-interface Coin{
+interface Coin {
   id: string;
   name: string;
   symbol: string;
   image: string;
-  current_price: number
-  price_change_percentage_24: number
-  total_volume: number
+  current_price: number;
+  price_change_percentage_24h: number;
+  total_volume: number;
 }
 
 @Component({
@@ -17,10 +17,19 @@ interface Coin{
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  coins: Coin[] = [];
+  filteredCoins: Coin[] = [];
+  titles: string[] = ['#', 'Coin', 'Price', 'Price Change', '24h Volume'];
 
-  coins: Coin[] = []
+  searchText = '';
 
   constructor(private http: HttpClient) {}
+  searchCoin() {
+    this.filteredCoins = this.coins.filter((coin) =>
+      coin.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
+      coin.symbol.toLowerCase().includes(this.searchText.toLowerCase())
+    );
+  }
   ngOnInit() {
     this.http
       .get<Coin[]>(
@@ -29,7 +38,8 @@ export class AppComponent implements OnInit {
       .subscribe(
         (res) => {
           console.log(res);
-          this.coins = res
+          this.coins = res;
+          this.filteredCoins = res;
         },
         (err) => console.log(err)
       );
